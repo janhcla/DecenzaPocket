@@ -120,7 +120,7 @@ endif()
 
 if(IOS)
     set_target_properties(DecenzaPocket PROPERTIES
-        MACOSX_BUNDLE_GUI_IDENTIFIER "io.github.kulitorum.decenzapocket"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.janhagenclausen.DecenzaPocket"
         MACOSX_BUNDLE_BUNDLE_VERSION "${CURRENT_VERSION_CODE}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/ios/Info.plist"

@@ -4,7 +4,7 @@
 <dict>
     <key>com.apple.security.application-groups</key>
     <array>
-        <string>group.io.github.kulitorum.decenzapocket</string>
+        <string>group.com.janhagenclausen.DecenzaPocket</string>
     </array>
     <key>aps-environment</key>
     <string>production</string>

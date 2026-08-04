@@ -1,6 +1,6 @@
 name: PowerWidget
 options:
-  bundleIdPrefix: io.github.kulitorum.decenzapocket
+  bundleIdPrefix: com.janhagenclausen.DecenzaPocket
   deploymentTarget:
     iOS: "17.0"
   xcodeVersion: "16.0"
@@ -16,7 +16,7 @@ targets:
           - "PowerWidget.xcodeproj"
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: io.github.kulitorum.decenzapocket.PowerWidget
+        PRODUCT_BUNDLE_IDENTIFIER: com.janhagenclausen.DecenzaPocket.PowerWidget
         SWIFT_VERSION: "5.9"
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: Info.plist

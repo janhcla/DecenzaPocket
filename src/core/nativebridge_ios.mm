@@ -7,7 +7,7 @@ namespace NativeBridge {
 void syncPairingData(const QString& deviceId, const QString& pairingToken)
 {
     @autoreleasepool {
-        NSString* suiteName = @"group.io.github.kulitorum.decenzapocket";
+        NSString* suiteName = @"group.com.janhagenclausen.DecenzaPocket";
         NSUserDefaults* defaults = [[NSUserDefaults alloc] initWithSuiteName:suiteName];
         if (defaults) {
             [defaults setObject:deviceId.toNSString() forKey:@"device_id"];

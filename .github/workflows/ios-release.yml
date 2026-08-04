@@ -262,9 +262,9 @@ jobs:
               <string>iPhone Distribution</string>
               <key>provisioningProfiles</key>
               <dict>
-                  <key>io.github.kulitorum.decenzapocket</key>
+                  <key>com.janhagenclausen.DecenzaPocket</key>
                   <string>${{ secrets.PROVISIONING_PROFILE_NAME }}</string>
-                  <key>io.github.kulitorum.decenzapocket.PowerWidget</key>
+                  <key>com.janhagenclausen.DecenzaPocket.PowerWidget</key>
                   <string>${{ secrets.WIDGET_PROVISIONING_PROFILE_NAME }}</string>
               </dict>
           </dict>

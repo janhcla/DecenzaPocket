@@ -1,7 +1,7 @@
 import Foundation
 
 struct SharedState {
-    static let suiteName = "group.io.github.kulitorum.decenzapocket"
+    static let suiteName = "group.com.janhagenclausen.DecenzaPocket"
 
     private static var defaults: UserDefaults? {
         UserDefaults(suiteName: suiteName)
