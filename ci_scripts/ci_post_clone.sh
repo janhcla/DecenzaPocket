@@ -2,7 +2,8 @@
 
 # Xcode Cloud checks out a CMake/Qt repository rather than a checked-in
 # .xcodeproj. Generate the container project before Xcode starts its archive
-# action. The workflow is configured to use build/ios/DecenzaPocket.xcodeproj.
+# action. The workflow is configured to use
+# build/ios-xcode-cloud/DecenzaPocket.xcodeproj.
 
 set -euo pipefail
 
@@ -10,7 +11,7 @@ REPOSITORY_ROOT="${CI_PRIMARY_REPOSITORY_PATH:-$(pwd)}"
 QT_VERSION='6.10.2'
 QT_INSTALL_ROOT="$HOME/Qt"
 PYTHON_ENV="$HOME/.decenza-pocket-xcode-cloud"
-BUILD_DIR="$REPOSITORY_ROOT/build/ios"
+BUILD_DIR="$REPOSITORY_ROOT/build/ios-xcode-cloud"
 
 python3 -m venv "$PYTHON_ENV"
 PYTHON="$PYTHON_ENV/bin/python3"
