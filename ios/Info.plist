@@ -5,7 +5,7 @@
     <key>CFBundleIconName</key>
     <string>AppIcon</string>
     <key>CFBundleDisplayName</key>
-    <string>Decenza Pocket</string>
+    <string>DecenzaPocket</string>
     <key>CFBundleExecutable</key>
     <string>DecenzaPocket</string>
     <key>CFBundleIdentifier</key>
