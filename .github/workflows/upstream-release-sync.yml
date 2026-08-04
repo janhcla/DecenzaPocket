@@ -1,0 +1,65 @@
+name: Sync upstream release to codex
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: upstream-release-sync-codex
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout codex branch
+        uses: actions/checkout@v6
+        with:
+          ref: codex
+          fetch-depth: 0
+
+      - name: Find newest upstream release, including prereleases
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=$(gh api repos/Kulitorum/DecenzaPocket/releases \
+            --jq 'map(select(.draft == false)) | sort_by(.published_at) | reverse | .[0].tag_name')
+          test -n "$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Newest upstream release: $TAG"
+
+      - name: Check whether release is already synced
+        id: check
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          CURRENT=$(cat .github/upstream-release 2>/dev/null || true)
+          if [ "$CURRENT" = "$TAG" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "$TAG is already synced"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Merge release into codex
+        if: steps.check.outputs.changed == 'true'
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/Kulitorum/DecenzaPocket.git
+          git fetch upstream "refs/tags/$TAG:refs/tags/$TAG"
+          git merge --no-edit "$TAG"
+          printf '%s\n' "$TAG" > .github/upstream-release
+          git add .github/upstream-release
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: record upstream release $TAG"
+          fi
+          git push origin HEAD:codex

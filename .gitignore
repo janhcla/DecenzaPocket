@@ -6,6 +6,7 @@ cmake-build-*/
 # Qt Creator generated files
 *.user
 *.user.*
+aqtinstall.log
 
 # Generated files
 android/AndroidManifest.xml

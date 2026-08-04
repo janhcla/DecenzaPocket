@@ -12,6 +12,8 @@ on:
 
   # Trigger on version tags (pre-release and release)
   push:
+    branches:
+      - codex
     tags:
       - 'v*'
 
@@ -50,9 +52,13 @@ jobs:
         run: |
           CURRENT=$(cat versioncode.txt | tr -d '[:space:]')
           NEXT=$((CURRENT + 1))
+          APP_VERSION=$(sed -nE 's/^project\(DecenzaPocket VERSION ([^ ]+) .*/\1/p' CMakeLists.txt)
+          test -n "$APP_VERSION"
           echo "$NEXT" > versioncode.txt
           echo "build_code=$NEXT" >> $GITHUB_OUTPUT
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
           echo "Version code bumped: $CURRENT -> $NEXT"
+          echo "App version: $APP_VERSION"
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
@@ -275,7 +281,7 @@ jobs:
             -allowProvisioningUpdates
 
       - name: Upload to App Store Connect
-        if: ${{ inputs.upload_to_appstore == true || startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ inputs.upload_to_appstore == true || github.ref == 'refs/heads/codex' || startsWith(github.ref, 'refs/tags/v') }}
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
@@ -323,14 +329,14 @@ jobs:
           overwrite: true
           if-no-files-found: warn
 
-      - name: Commit version code back to master
+      - name: Commit version code back to codex
         run: |
           BUILD_CODE="${{ steps.bump.outputs.build_code }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git fetch origin master
+          git fetch origin codex
           git stash --include-untracked
-          git checkout origin/master
+          git checkout -B codex origin/codex
           echo "$BUILD_CODE" > versioncode.txt
           git add versioncode.txt
           if git diff --cached --quiet; then
@@ -339,13 +345,13 @@ jobs:
             git commit -m "ci: bump version code to $BUILD_CODE [skip ci]"
             PUSH_OK=false
             for attempt in 1 2 3; do
-              if git push origin HEAD:master; then
-                echo "Committed version code $BUILD_CODE back to master"
+              if git push origin HEAD:codex; then
+                echo "Committed version code $BUILD_CODE back to codex"
                 PUSH_OK=true
                 break
               else
                 echo "Push failed (attempt $attempt/3), rebasing..."
-                git pull --rebase origin master
+                git pull --rebase origin codex
               fi
             done
             if [ "$PUSH_OK" != "true" ]; then
@@ -368,5 +374,5 @@ jobs:
           if [ "$IS_PRERELEASE" = "true" ] || [ "$IS_PRERELEASE" = "unknown" ]; then
             echo "Skipping cache warm for pre-release $TAG"
           else
-            gh workflow run "$GITHUB_WORKFLOW" --ref master || echo "Cache warm dispatch failed (non-fatal)"
+            gh workflow run "$GITHUB_WORKFLOW" --ref codex || echo "Cache warm dispatch failed (non-fatal)"
           fi
