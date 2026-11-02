@@ -263,6 +263,22 @@ jobs:
             DEVELOPMENT_TEAM=$TEAM_ID \
             CODE_SIGN_IDENTITY="iPhone Distribution"
 
+      - name: Verify Widget App Group entitlement
+        run: |
+          WIDGET_APPEX="$RUNNER_TEMP/DecenzaPocket.xcarchive/Products/Applications/DecenzaPocket.app/PlugIns/PowerWidgetExtension.appex"
+          if [ ! -d "$WIDGET_APPEX" ]; then
+            echo "::error::Widget extension was not produced"
+            exit 1
+          fi
+
+          ENTITLEMENTS=$RUNNER_TEMP/widget-entitlements.plist
+          codesign -d --entitlements :- "$WIDGET_APPEX" > "$ENTITLEMENTS"
+          if ! /usr/libexec/PlistBuddy -c "Print :com.apple.security.application-groups" "$ENTITLEMENTS" \
+              | grep -Fq "group.com.janhagenclausen.DecenzaPocket"; then
+            echo "::error::The signed widget is missing the shared App Group entitlement. Enable group.com.janhagenclausen.DecenzaPocket for the widget App ID, regenerate its provisioning profile, and update WIDGET_PROVISIONING_PROFILE_BASE64."
+            exit 1
+          fi
+
       - name: Export IPA
         env:
           KEYCHAIN_PATH: ${{ runner.temp }}/app-signing.keychain-db
@@ -282,6 +298,8 @@ jobs:
               <string>app-store-connect</string>
               <key>teamID</key>
               <string>${{ secrets.APPLE_TEAM_ID }}</string>
+              <key>testFlightInternalTestingOnly</key>
+              <true/>
               <key>uploadSymbols</key>
               <true/>
               <key>destination</key>
